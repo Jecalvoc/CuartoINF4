@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Misión: Guardianes Digitales 🦸‍♂️🦸‍♀️</title>
+    <style>
+        :root {
+            --bg-color: #f0f9ff;
+            --card-bg: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #475569;
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --success: #22c55e;
+            --warning: #f97316;
+            --danger: #ef4444;
+            --font-main: 'Comic Sans MS', 'Chalkboard SE', 'Arial Rounded MT Bold', sans-serif;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            font-family: var(--font-main);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            background: var(--card-bg);
+            border-bottom: 4px solid var(--primary);
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .logo { font-size: 1.5rem; font-weight: bold; color: var(--primary); display: flex; align-items: center; gap: 10px; }
+
+        .progress-container { width: 100%; max-width: 500px; background: #e2e8f0; height: 16px; border-radius: 10px; overflow: hidden; border: 2px solid #cbd5e1; }
+        .progress-bar { height: 100%; background: linear-gradient(90deg, var(--primary), var(--success)); width: 0%; transition: width 0.5s ease; }
+        .score-display { font-size: 1.1rem; color: var(--warning); font-weight: bold; }
+
+        main { flex: 1; padding: 1.5rem; max-width: 800px; margin: 0 auto; width: 100%; }
+
+        .module { display: none; animation: popIn 0.5s ease; }
+        .module.active { display: block; }
+        @keyframes popIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+
+        h1 { color: var(--primary); margin-bottom: 0.5rem; font-size: 1.8rem; text-align: center; }
+        h2 { color: var(--text-primary); margin: 1.5rem 0 1rem; font-size: 1.3rem; display: flex; align-items: center; gap: 8px; }
+        p { margin-bottom: 1rem; color: var(--text-secondary); font-size: 1.1rem; }
+
+        .card {
+            background: var(--card-bg); border: 3px solid #e2e8f0; border-radius: 20px;
+            padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 8px 16px rgba(0, 0, 0, 0.05);
+        }
+
+        .rule-box {
+            background: #eff6ff; border: 3px dashed var(--primary); padding: 1.5rem; text-align: center;
+            font-size: 1.2rem; font-weight: bold; color: var(--primary); margin: 1rem 0; border-radius: 15px;
+        }
+
+        .btn {
+            background: var(--primary); color: white; border: none; padding: 1rem 2rem; border-radius: 50px;
+            font-weight: bold; font-size: 1.1rem; cursor: pointer; transition: all 0.2s; font-family: var(--font-main);
+            margin-top: 1rem; width: 100%; box-shadow: 0 4px 0 #1d4ed8;
+        }
+        .btn:hover { background: var(--primary-hover); transform: translateY(-2px); }
+        .btn:active { transform: translateY(2px); box-shadow: 0 0 0 #1d4ed8; }
+        .btn:disabled { background: #94a3b8; box-shadow: none; cursor: not-allowed; transform: none; }
+
+        .mission-counter {
+            text-align: center; background: var(--warning); color: white; padding: 5px 15px;
+            border-radius: 20px; font-weight: bold; display: inline-block; margin-bottom: 1rem;
+        }
+
+        .scenario-box {
+            background: #fff7ed; border-left: 6px solid var(--warning); padding: 1rem;
+            border-radius: 0 10px 10px 0; margin: 1rem 0; font-size: 1.1rem;
+        }
+
+        .options-grid { display: grid; gap: 1rem; margin-top: 1rem; }
+
+        .option-btn {
+            background: white; border: 3px solid #e2e8f0; color: var(--text-primary); padding: 1rem;
+            border-radius: 15px; cursor: pointer; text-align: left; font-size: 1.05rem; font-family: var(--font-main);
+            transition: all 0.2s; box-shadow: 0 4px 0 #cbd5e1;
+        }
+        .option-btn:hover:not(:disabled) { border-color: var(--primary); background: #eff6ff; }
+        .option-btn:active:not(:disabled) { transform: translateY(2px); box-shadow: 0 0 0 #cbd5e1; }
+        .option-btn.correct { border-color: var(--success); background: #dcfce7; color: #166534; box-shadow: 0 4px 0 #15803d; }
+        .option-btn.incorrect { border-color: var(--danger); background: #fee2e2; color: #991b1b; box-shadow: 0 4px 0 #b91c1c; }
+
+        .feedback {
+            margin-top: 1rem; padding: 1rem; border-radius: 15px; display: none; font-size: 1.1rem; text-align: center;
+        }
+        .feedback.success { background: #dcfce7; border: 3px solid var(--success); color: #166534; display: block; }
+        .feedback.error { background: #fee2e2; border: 3px solid var(--danger); color: #991b1b; display: block; }
+
+        @media (max-width: 600px) {
+            h1 { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo">🛡️ Misión: Guardianes Digitales</div>
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+    <div class="score-display">⭐ Puntos: <span id="score">0</span></div>
+</header>
+
+<main>
+    <div id="module-0" class="module active">
+        <h1>¡Bienvenido, Futuro Guardián! 🦸‍♂️🦸‍♀️</h1>
+        <div class="card">
+            <p>Internet es increíble, pero hay "trampas" escondidas. ¡No te preocupes! Solo necesitas usar tu <strong>Superpoder de Pensamiento</strong>.</p>
+            <p>En esta misión de 4 niveles, enfrentarás <strong>20 desafíos</strong> en cada nivel para ganar tu insignia de Guardián Digital.</p>
+            <button class="btn" onclick="nextModule(1)">¡ACEPTAR LA MISIÓN! 🚀</button>
+        </div>
+    </div>
+
+    <div id="module-1" class="module">
+        <h1>Nivel 1: El Escudo de Protección 🛡️</h1>
+        <div class="card">
+            <h2>🕵️‍♂️ La Regla de Oro: SI... ENTONCES...</h2>
+            <p>Los "Pescadores de Trucos" intentan asustarte o emocionarte para que les des tu contraseña.</p>
+            <div class="rule-box">Seguridad = (Contraseña Secreta) + (Pensar antes de hacer clic)</div>
+        </div>
+        <div class="card">
+            <div style="text-align: center;"><span class="mission-counter" id="counter-1">Misión 1 de 20</span></div>
+            <div id="mission-area-1"></div>
+            <div id="feedback-1" class="feedback"></div>
+            <button id="btn-next-mission-1" class="btn" style="display:none;" onclick="nextMission(1)">Siguiente Misión ➡️</button>
+            <button id="btn-finish-1" class="btn" style="display:none; background: var(--success); box-shadow: 0 4px 0 #15803d;" onclick="nextModule(2)">¡Nivel 1 Completado! 🏆</button>
+        </div>
+    </div>
+
+    <div id="module-2" class="module">
+        <h1>Nivel 2: El Poder del Espectador Valiente 🫂</h1>
+        <div class="card">
+            <h2>👣 Tu Huella Digital y el Respeto</h2>
+            <p>Todo lo que publicas es como pintar con marcador permanente: <strong>es muy difícil de borrar</strong>.</p>
+            <div class="rule-box" style="background: #f0fdf4; border-color: var(--success); color: #166534;">
+                Pasos Mágicos: 1️⃣ Guarda la prueba ➡️ 2️⃣ Apoya a la víctima ➡️ 3️⃣ Reporta y avisa a un adulto
+            </div>
+        </div>
+        <div class="card">
+            <div style="text-align: center;"><span class="mission-counter" id="counter-2">Misión 1 de 20</span></div>
+            <div id="mission-area-2"></div>
+            <div id="feedback-2" class="feedback"></div>
+            <button id="btn-next-mission-2" class="btn" style="display:none;" onclick="nextMission(2)">Siguiente Misión ➡️</button>
+            <button id="btn-finish-2" class="btn" style="display:none; background: var(--success); box-shadow: 0 4px 0 #15803d;" onclick="nextModule(3)">¡Nivel 2 Completado! 🏆</button>
+        </div>
+    </div>
+
+    <div id="module-3" class="module">
+        <h1>Nivel 3: El Robot que te Observa 🤖</h1>
+        <div class="card">
+            <h2>🫧 La Burbuja de Videos y el Tiempo</h2>
+            <p>Las apps tienen un "robot" cuyo único trabajo es <strong>que no cierres la app</strong>.</p>
+            <div class="rule-box" style="background: #fff7ed; border-color: var(--warning); color: #92400e;">
+                ⏳ El "Desplazamiento Infinito" es como comer dulces todo el día
+            </div>
+        </div>
+        <div class="card">
+            <div style="text-align: center;"><span class="mission-counter" id="counter-3">Misión 1 de 20</span></div>
+            <div id="mission-area-3"></div>
+            <div id="feedback-3" class="feedback"></div>
+            <button id="btn-next-mission-3" class="btn" style="display:none;" onclick="nextMission(3)">Siguiente Misión ➡️</button>
+            <button id="btn-finish-3" class="btn" style="display:none; background: var(--success); box-shadow: 0 4px 0 #15803d;" onclick="nextModule(4)">¡Nivel 3 Completado! 🏆</button>
+        </div>
+    </div>
+
+    <div id="module-4" class="module">
+        <h1>Nivel 4: El Juramento del Guardián 🏆</h1>
+        <div class="card">
+            <h2>🔄 Cambiando el "Bucle Aburrido" por un "Superhábito"</h2>
+            <p>Un "bucle" es algo que haces una y otra vez sin pensar. ¡Tú eres el jefe de tu cerebro!</p>
+        </div>
+        <div class="card">
+            <div style="text-align: center;"><span class="mission-counter" id="counter-4">Misión 1 de 20</span></div>
+            <div id="mission-area-4"></div>
+            <div id="feedback-4" class="feedback"></div>
+            <button id="btn-next-mission-4" class="btn" style="display:none;" onclick="nextMission(4)">Siguiente Misión ➡️</button>
+            <button id="btn-finish-4" class="btn" style="display:none; background: var(--success); box-shadow: 0 4px 0 #15803d;" onclick="finishWorkshop()">🎉 ¡OBTENER MI DIPLOMA! 🎉</button>
+        </div>
+    </div>
+
+    <div id="module-final" class="module">
+        <h1 style="color: var(--success);">¡MISIÓN CUMPLIDA! 🏆🎉</h1>
+        <div class="card" style="text-align: center; border-color: var(--success); background: #f0fdf4;">
+            <div style="font-size: 4rem; margin-bottom: 1rem;">🦸‍♂️🛡️🦸‍♀️</div>
+            <h2>¡Felicidades, Guardián Digital Certificado!</h2>
+            <p>Has completado las 80 misiones.</p>
+            <div style="background: white; padding: 1.5rem; border-radius: 15px; border: 3px dashed var(--primary); margin: 1.5rem 0; text-align: left;">
+                <h3 style="text-align: center; color: var(--primary);">📜 Mi Juramento de Guardián</h3>
+                <p style="font-style: italic; color: var(--text-primary);">"Yo prometo usar mi cerebro como mi mejor escudo. No compartiré cosas que hagan daño, protegeré mis contraseñas como un tesoro y recordaré que detrás de cada pantalla hay una persona real que merece respeto."</p>
+                <p style="text-align: right; margin-top: 1rem; font-weight: bold;">Firma: ____________________</p>
+            </div>
+            <button class="btn" onclick="location.reload()">🔄 Jugar Otra Vez</button>
+        </div>
+    </div>
+</main>
+
+<script>
+const misiones = {
+    1: [
+        { s: "Recibes un WhatsApp: '¡Ganaste 1,000 monedas de Roblox! Haz clic AQUÍ: http://regalo-robl0x.com'", o: ["Hacer clic rápido para no perder mis monedas gratis del juego", "Notar que 'robl0x' tiene un cero, borrar el mensaje y avisar a mis papás", "Reenviar el mensaje a todos mis amigos para que ellos también ganen"], c: 1, fc: "¡Excelente! Los hackers usan letras parecidas para engañarte.", fi: "¡Cuidado! Revisar bien el nombre del enlace es tu primera línea de defensa." },
+        { s: "Un 'amigo' en un juego en línea te pide tu contraseña para 'subir de nivel' tu cuenta.", o: ["Decirle que no, los guardianes NUNCA comparten su contraseña con nadie", "Dársela porque es mi amigo y quiero ayudarlo a subir de nivel rápido", "Dársela pero cambiarla después para que no pueda entrar otra vez"], c: 0, fc: "¡Correcto! Ni los mejores amigos te pedirán tu contraseña.", fi: "Nunca compartas tu contraseña, incluso con amigos." },
+        { s: "Un correo dice: 'Tu cuenta de Netflix será borrada en 1 hora. Haz clic aquí para verificar'.", o: ["Hacer clic inmediatamente para salvar mi cuenta antes de que sea tarde", "Responder el correo preguntando por qué quieren borrar mi cuenta", "Ignorarlo y, si tengo duda, entrar yo mismo directamente a la app oficial"], c: 2, fc: "¡Muy bien! La urgencia es una trampa clásica.", fi: "Los correos de urgencia suelen ser falsos." },
+        { s: "Ves un código QR pegado en un poste en la calle que dice 'Escanea para un premio sorpresa'.", o: ["No lo escaneo porque podría llevar a un sitio peligroso o robar mis datos", "Escaneo el código con mi celular porque quiero ver qué premio me dan", "Le tomo una foto al código y la subo a mis redes sociales para compartir"], c: 0, fc: "¡Guardián alerta! Los QR desconocidos pueden ser trampas.", fi: "Nunca escanees códigos QR en lugares públicos desconocidos." },
+        { s: "Una ventana emergente dice: '¡TU COMPUTADORA TIENE 5 VIRUS! HAZ CLIC PARA LIMPIAR'.", o: ["Hacer clic rápido para limpiar mi computadora de todos esos virus peligrosos", "Cerrar la pestaña o el navegador inmediatamente sin hacer clic en nada", "Descargar el programa que recomiendan para limpiar mi computadora"], c: 1, fc: "¡Correcto! Esos anuncios falsos quieren asustarte.", fi: "Esos anuncios son falsos. Hacer clic podría instalar virus." },
+        { s: "Alguien que no conoces te escribe: 'Hola, soy de tu misma escuela, ¿en qué grado estás?'", o: ["Decirle mi nombre y grado completo para que podamos ser buenos amigos", "Preguntarle primero su nombre y en qué escuela estudia él también", "No responder y bloquearlo porque no comparto datos con desconocidos"], c: 2, fc: "¡Perfecto! Tu información personal es un tesoro.", fi: "No compartas datos con quien no conoces en persona." },
+        { s: "Tu contraseña actual es el nombre de tu mascota y el año en que naciste.", o: ["Está bien así porque es muy fácil de recordar y no se me olvida nunca", "Es muy débil, debo cambiarla por una frase secreta con números y símbolos", "La anoto en un papel y lo pego en el monitor para no olvidarla jamás"], c: 1, fc: "¡Bien pensado! Los adivinos prueban primero nombres de mascotas.", fi: "Esa información es fácil de adivinar." },
+        { s: "En un video de YouTube, el creador dice: 'Haz clic en este enlace acortado para ver el final secreto'.", o: ["Hacer clic porque confío en el YouTuber y quiero ver el final secreto", "Copiar el enlace y enviarlo a un amigo para que él lo abra primero", "No hacer clic porque los enlaces acortados ocultan a dónde van realmente"], c: 2, fc: "¡Astuto! A veces hackean cuentas de YouTubers.", fi: "Los enlaces acortados son como sobres cerrados." },
+        { s: "Te conectas al Wi-Fi gratis del parque y te piden tu nombre completo y correo para registrarte.", o: ["Poner los datos completos porque quiero jugar en línea con mis amigos", "No conectarme o usar los datos de invitado sin dar información personal real", "Poner un nombre falso pero el correo real de mis papás para registrarme"], c: 1, fc: "¡Correcto! El Wi-Fi público a veces roba datos.", fi: "Las redes Wi-Fi públicas a menudo recolectan datos." },
+        { s: "Recibes un mensaje de voz que suena como tu mamá, pidiéndote que compres tarjetas de regalo urgentemente.", o: ["Hacerlo rápido para ayudarla porque parece que es muy urgente y importante", "Preguntarle por qué lo necesita por el mismo chat donde me envió el mensaje", "No hacerlo, llamarla a su número real para verificar (podría ser una imitación por IA)"], c: 2, fc: "¡Guardián avanzado! Hoy existen programas que imitan voces.", fi: "Las voces se pueden imitar con IA. Siempre llama para confirmar." },
+        { s: "Una página web te ofrece una descarga gratuita de un videojuego famoso que cuesta dinero.", o: ["No descargarlo porque los juegos 'piratas' suelen traer virus ocultos peligrosos", "Descargarlo porque es gratis y me encanta ese videojuego que cuesta mucho dinero", "Compartir el enlace con mis amigos para que ellos también lo descarguen gratis"], c: 0, fc: "¡Muy bien! Si es demasiado bueno para ser verdad, es trampa.", fi: "Las descargas gratuitas de juegos de pago traen virus." },
+        { s: "Una app de linterna para tu celular te pide permiso para acceder a tu cámara, micrófono y contactos.", o: ["Aceptar todos los permisos porque la app necesita acceso para funcionar correctamente", "No instalarla porque una linterna no necesita saber con quién hablas ni ver tu cámara", "Aceptar los permisos pero no usar la app nunca después de instalarla en mi celular"], c: 1, fc: "¡Excelente! Las apps solo deben pedir permisos que tengan sentido.", fi: "Si una app pide permisos raros, es alerta roja." },
+        { s: "Un 'test de personalidad' en Facebook te pide tu fecha de nacimiento, nombre de tu mascota y escuela.", o: ["Responder todas las preguntas porque quiero saber mi personalidad y es divertido", "Responder con datos completamente inventados para que no sepan quién soy realmente", "No hacerlo porque están recolectando respuestas para adivinar mis contraseñas"], c: 2, fc: "¡Correcto! Esos tests son trampas para robar datos.", fi: "Esos datos son los que usan para recuperar contraseñas." },
+        { s: "Te llega un SMS: 'Paquete retenido. Pague $5 de envío en este enlace para recibirlo'.", o: ["Pagar los $5 porque quiero recibir mi paquete lo más rápido posible", "Borrarlo porque yo no he comprado nada que venga por correo recientemente", "Hacer clic para ver de qué paquete se trata y luego decidir si pago o no"], c: 1, fc: "¡Bien! Si no esperas un paquete, es un intento de robo.", fi: "Nunca hagas clic en enlaces de SMS sobre paquetes." },
+        { s: "Alguien te ofrece comprar tu cuenta de videojuego por dinero real a través de una página web rara.", o: ["Venderla porque quiero el dinero y la cuenta no me importa tanto", "Pedir el dinero por adelantado antes de darle acceso a mi cuenta del juego", "Rechazarlo porque vender o comprar cuentas viola las reglas y es una estafa común"], c: 2, fc: "¡Correcto! Además de ser estafa, puedes perder tu cuenta.", fi: "El comercio de cuentas casi siempre termina en robo." },
+        { s: "Usas la misma contraseña para tu correo, tu juego y tu red social.", o: ["Es peligroso porque si descubren una, tendrán acceso a todas mis cuentas", "Está bien así porque es muy fácil de recordar y no se me olvida nunca", "Es lo que hace todo el mundo porque es más práctico y cómodo"], c: 0, fc: "¡Muy cierto! Debes tener contraseñas diferentes.", fi: "Es como tener la misma llave para todo. ¡Peligroso!" },
+        { s: "Un desconocido te envía una solicitud de amistad y su foto de perfil es de un modelo muy atractivo.", o: ["Aceptar la solicitud porque tiene muy buena foto y parece interesante", "Preguntarle si lo conozco de algún lugar antes de aceptar la solicitud", "Rechazarla porque a menudo son perfiles falsos que luego piden fotos o dinero"], c: 2, fc: "¡Guardián listo! Los perfiles demasiado perfectos suelen ser falsos.", fi: "Los estafadores usan fotos robadas de internet." },
+        { s: "Te piden que escanees tu huella digital o cara para 'verificar tu edad' en una página web desconocida.", o: ["Hacerlo porque no pasa nada y quiero entrar a la página rápidamente", "No hacerlo porque mis datos biométricos son únicos y no debo regalarlos", "Usar el dedo de un familiar para que no registren mis datos personales"], c: 1, f
